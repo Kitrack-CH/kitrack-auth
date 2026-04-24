@@ -34,19 +34,15 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: "var(--surface-1)" }}
+      style={{ background: "var(--surface-0)" }}
     >
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-3">
           <div className="flex items-center justify-center size-10 rounded-xl bg-[var(--color-kitrack-blue)] text-white font-bold text-lg shadow-sm">
             K
           </div>
           <div className="text-center">
-            <h1
-              className="text-xl font-bold"
-              style={{ color: "var(--text-primary)" }}
-            >
+            <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
               KITRACK
             </h1>
             <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
@@ -56,17 +52,18 @@ export default function LoginPage() {
         </div>
 
         <div
-          className="rounded-[var(--radius-card)] border p-6 space-y-4 shadow-[var(--shadow-card)]"
+          className="rounded-[var(--radius-card)] border p-6 space-y-4"
           style={{
-            background: "var(--surface-0)",
+            background: "var(--surface-1)",
             borderColor: "var(--border-default)",
+            boxShadow: "var(--shadow-card)",
           }}
         >
           {error && (
             <div
               className="rounded-lg border px-4 py-3 text-sm"
               style={{
-                background: "color-mix(in srgb, var(--color-kitrack-orangeDark) 8%, transparent)",
+                background: "color-mix(in srgb, var(--color-kitrack-orangeDark) 10%, transparent)",
                 borderColor: "var(--color-kitrack-orange)",
                 color: "var(--color-kitrack-orangeDark)",
               }}
@@ -76,59 +73,16 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium mb-1.5"
-                style={{ color: "var(--text-primary)" }}
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="jean@exemple.com"
-                className="w-full rounded-[var(--radius-card)] border px-3 py-2 text-sm outline-none transition-all"
-                style={{
-                  background: "var(--surface-1)",
-                  borderColor: "var(--border-default)",
-                  color: "var(--text-primary)",
-                }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = "var(--color-kitrack-blue)")}
-                onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-default)")}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium mb-1.5"
-                style={{ color: "var(--text-primary)" }}
-              >
-                Mot de passe
-              </label>
-              <input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full rounded-[var(--radius-card)] border px-3 py-2 text-sm outline-none transition-all"
-                style={{
-                  background: "var(--surface-1)",
-                  borderColor: "var(--border-default)",
-                  color: "var(--text-primary)",
-                }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = "var(--color-kitrack-blue)")}
-                onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-default)")}
-              />
-            </div>
+            <AuthField
+              id="email" type="email" label="Email"
+              value={email} onChange={(e) => setEmail(e.target.value)}
+              placeholder="jean@exemple.com" autoComplete="email"
+            />
+            <AuthField
+              id="password" type="password" label="Mot de passe"
+              value={password} onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••" autoComplete="current-password"
+            />
 
             <Button type="submit" variant="primary" size="md" loading={loading} className="w-full mt-2">
               Se connecter
@@ -147,6 +101,40 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function AuthField({
+  id, type = "text", label, value, onChange, placeholder, autoComplete,
+}: {
+  id: string; type?: string; label: string; value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; autoComplete?: string;
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium mb-1.5" style={{ color: "var(--text-primary)" }}>
+        {label}
+      </label>
+      <input
+        id={id}
+        name={id}
+        type={type}
+        required
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        className="w-full rounded-[var(--radius-card)] border px-3 py-2 text-sm outline-none transition-colors"
+        style={{
+          background: "var(--surface-2)",
+          borderColor: "var(--border-default)",
+          color: "var(--text-primary)",
+        }}
+        onFocus={(e) => (e.currentTarget.style.borderColor = "var(--color-kitrack-blue)")}
+        onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-default)")}
+      />
     </div>
   );
 }

@@ -41,10 +41,9 @@ export default function RegisterPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: "var(--surface-1)" }}
+      style={{ background: "var(--surface-0)" }}
     >
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-3">
           <div className="flex items-center justify-center size-10 rounded-xl bg-[var(--color-kitrack-blue)] text-white font-bold text-lg shadow-sm">
             K
@@ -60,14 +59,18 @@ export default function RegisterPage() {
         </div>
 
         <div
-          className="rounded-[var(--radius-card)] border p-6 space-y-4 shadow-[var(--shadow-card)]"
-          style={{ background: "var(--surface-0)", borderColor: "var(--border-default)" }}
+          className="rounded-[var(--radius-card)] border p-6 space-y-4"
+          style={{
+            background: "var(--surface-1)",
+            borderColor: "var(--border-default)",
+            boxShadow: "var(--shadow-card)",
+          }}
         >
           {error && (
             <div
               className="rounded-lg border px-4 py-3 text-sm"
               style={{
-                background: "color-mix(in srgb, var(--color-kitrack-orangeDark) 8%, transparent)",
+                background: "color-mix(in srgb, var(--color-kitrack-orangeDark) 10%, transparent)",
                 borderColor: "var(--color-kitrack-orange)",
                 color: "var(--color-kitrack-orangeDark)",
               }}
@@ -78,52 +81,13 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
-              <InputField
-                id="firstName"
-                name="firstName"
-                label="Prénom"
-                value={form.firstName}
-                onChange={handleChange}
-                placeholder="Jean"
-                autoComplete="given-name"
-              />
-              <InputField
-                id="lastName"
-                name="lastName"
-                label="Nom"
-                value={form.lastName}
-                onChange={handleChange}
-                placeholder="Dupont"
-                autoComplete="family-name"
-              />
+              <AuthField id="firstName" name="firstName" label="Prénom" value={form.firstName} onChange={handleChange} placeholder="Jean" autoComplete="given-name" />
+              <AuthField id="lastName" name="lastName" label="Nom" value={form.lastName} onChange={handleChange} placeholder="Dupont" autoComplete="family-name" />
             </div>
-
-            <InputField
-              id="email"
-              name="email"
-              type="email"
-              label="Email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="jean@exemple.com"
-              autoComplete="email"
-            />
-
+            <AuthField id="email" name="email" type="email" label="Email" value={form.email} onChange={handleChange} placeholder="jean@exemple.com" autoComplete="email" />
             <div>
-              <InputField
-                id="password"
-                name="password"
-                type="password"
-                label="Mot de passe"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                autoComplete="new-password"
-                minLength={8}
-              />
-              <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
-                Minimum 8 caractères
-              </p>
+              <AuthField id="password" name="password" type="password" label="Mot de passe" value={form.password} onChange={handleChange} placeholder="••••••••" autoComplete="new-password" minLength={8} />
+              <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>Minimum 8 caractères</p>
             </div>
 
             <Button type="submit" variant="primary" size="md" loading={loading} className="w-full mt-2">
@@ -133,11 +97,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm pt-1" style={{ color: "var(--text-muted)" }}>
             Déjà un compte ?{" "}
-            <Link
-              href="/login"
-              className="font-medium underline-offset-2 hover:underline"
-              style={{ color: "var(--color-kitrack-blue)" }}
-            >
+            <Link href="/login" className="font-medium underline-offset-2 hover:underline" style={{ color: "var(--color-kitrack-blue)" }}>
               Se connecter
             </Link>
           </p>
@@ -147,12 +107,12 @@ export default function RegisterPage() {
   );
 }
 
-function InputField({
-  id, name, label, value, onChange, placeholder, type = "text", autoComplete, minLength,
+function AuthField({
+  id, name, type = "text", label, value, onChange, placeholder, autoComplete, minLength,
 }: {
-  id: string; name: string; label: string; value: string;
+  id: string; name?: string; type?: string; label: string; value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string; type?: string; autoComplete?: string; minLength?: number;
+  placeholder?: string; autoComplete?: string; minLength?: number;
 }) {
   return (
     <div>
@@ -161,7 +121,7 @@ function InputField({
       </label>
       <input
         id={id}
-        name={name}
+        name={name ?? id}
         type={type}
         required
         value={value}
@@ -169,8 +129,8 @@ function InputField({
         placeholder={placeholder}
         autoComplete={autoComplete}
         minLength={minLength}
-        className="w-full rounded-[var(--radius-card)] border px-3 py-2 text-sm outline-none transition-all"
-        style={{ background: "var(--surface-1)", borderColor: "var(--border-default)", color: "var(--text-primary)" }}
+        className="w-full rounded-[var(--radius-card)] border px-3 py-2 text-sm outline-none transition-colors"
+        style={{ background: "var(--surface-2)", borderColor: "var(--border-default)", color: "var(--text-primary)" }}
         onFocus={(e) => (e.currentTarget.style.borderColor = "var(--color-kitrack-blue)")}
         onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-default)")}
       />
