@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Profile = {
-  full_name: string | null;
-  first_name: string | null;
-  last_name: string | null;
+  first_name: string;
+  last_name: string;
   email: string;
-  phone: string | null;
+  phone: string;
   locale: string;
   timezone: string;
 };
@@ -29,16 +28,15 @@ export default function ProfilePage() {
 
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, first_name, last_name, email, phone, locale, timezone")
+        .select("first_name, last_name, email, phone, locale, timezone")
         .eq("id", user.id)
         .single();
 
       const p: Profile = {
-        full_name: data?.full_name ?? null,
-        first_name: data?.first_name ?? null,
-        last_name: data?.last_name ?? null,
+        first_name: data?.first_name ?? "",
+        last_name: data?.last_name ?? "",
         email: data?.email ?? user.email ?? "",
-        phone: data?.phone ?? null,
+        phone: data?.phone ?? "",
         locale: data?.locale ?? "fr",
         timezone: data?.timezone ?? "Europe/Paris",
       };
@@ -67,10 +65,10 @@ export default function ProfilePage() {
     const { error } = await supabase
       .from("profiles")
       .update({
-        full_name: form.full_name,
         first_name: form.first_name,
         last_name: form.last_name,
-        phone: form.phone,
+        full_name: `${form.first_name} ${form.last_name}`.trim(),
+        phone: form.phone || null,
         locale: form.locale,
         timezone: form.timezone,
       })
@@ -88,9 +86,10 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="animate-pulse space-y-4">
+      <div className="animate-pulse space-y-4 max-w-xl">
         <div className="h-6 bg-gray-200 rounded w-40" />
         <div className="h-4 bg-gray-100 rounded w-56" />
+        <div className="h-48 bg-gray-100 rounded-xl" />
       </div>
     );
   }
@@ -113,11 +112,9 @@ export default function ProfilePage() {
         )}
 
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Prénom" name="first_name" value={form.first_name ?? ""} onChange={handleChange} />
-          <Field label="Nom" name="last_name" value={form.last_name ?? ""} onChange={handleChange} />
+          <Field label="Prénom" name="first_name" value={form.first_name} onChange={handleChange} placeholder="Jean" />
+          <Field label="Nom" name="last_name" value={form.last_name} onChange={handleChange} placeholder="Dupont" />
         </div>
-
-        <Field label="Nom complet" name="full_name" value={form.full_name ?? ""} onChange={handleChange} />
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -130,7 +127,7 @@ export default function ProfilePage() {
           <p className="mt-1 text-xs text-gray-400">Non modifiable depuis cette page</p>
         </div>
 
-        <Field label="Téléphone" name="phone" value={form.phone ?? ""} onChange={handleChange} placeholder="+33 6 00 00 00 00" />
+        <Field label="Téléphone" name="phone" value={form.phone} onChange={handleChange} placeholder="+33 6 00 00 00 00" />
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -172,11 +169,7 @@ export default function ProfilePage() {
 }
 
 function Field({
-  label,
-  name,
-  value,
-  onChange,
-  placeholder,
+  label, name, value, onChange, placeholder,
 }: {
   label: string;
   name: string;
