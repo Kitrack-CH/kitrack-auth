@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import Button from "@/components/ui/Button";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -24,12 +25,7 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
-      options: {
-        data: {
-          first_name: form.firstName,
-          last_name: form.lastName,
-        },
-      },
+      options: { data: { first_name: form.firstName, last_name: form.lastName } },
     });
 
     if (error) {
@@ -43,105 +39,141 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ background: "var(--surface-1)" }}
+    >
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">KITRACK</h1>
-          <p className="mt-1 text-sm text-gray-500">Créez votre compte</p>
+        {/* Logo */}
+        <div className="mb-8 flex flex-col items-center gap-3">
+          <div className="flex items-center justify-center size-10 rounded-xl bg-[var(--color-kitrack-blue)] text-white font-bold text-lg shadow-sm">
+            K
+          </div>
+          <div className="text-center">
+            <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
+              KITRACK
+            </h1>
+            <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
+              Créez votre compte
+            </p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+        <div
+          className="rounded-[var(--radius-card)] border p-6 space-y-4 shadow-[var(--shadow-card)]"
+          style={{ background: "var(--surface-0)", borderColor: "var(--border-default)" }}
+        >
           {error && (
-            <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            <div
+              className="rounded-lg border px-4 py-3 text-sm"
+              style={{
+                background: "color-mix(in srgb, var(--color-kitrack-orangeDark) 8%, transparent)",
+                borderColor: "var(--color-kitrack-orange)",
+                color: "var(--color-kitrack-orangeDark)",
+              }}
+            >
               {error}
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                Prénom
-              </label>
-              <input
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <InputField
                 id="firstName"
                 name="firstName"
-                type="text"
-                required
+                label="Prénom"
                 value={form.firstName}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Jean"
+                autoComplete="given-name"
               />
-            </div>
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                Nom
-              </label>
-              <input
+              <InputField
                 id="lastName"
                 name="lastName"
-                type="text"
-                required
+                label="Nom"
                 value={form.lastName}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Dupont"
+                autoComplete="family-name"
               />
             </div>
-          </div>
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
+            <InputField
               id="email"
               name="email"
               type="email"
-              autoComplete="email"
-              required
+              label="Email"
               value={form.email}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="jean@exemple.com"
+              autoComplete="email"
             />
-          </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Mot de passe
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={form.password}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="••••••••"
-            />
-            <p className="mt-1 text-xs text-gray-400">Minimum 8 caractères</p>
-          </div>
+            <div>
+              <InputField
+                id="password"
+                name="password"
+                type="password"
+                label="Mot de passe"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                autoComplete="new-password"
+                minLength={8}
+              />
+              <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
+                Minimum 8 caractères
+              </p>
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? "Création..." : "Créer mon compte"}
-          </button>
+            <Button type="submit" variant="primary" size="md" loading={loading} className="w-full mt-2">
+              Créer mon compte
+            </Button>
+          </form>
 
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm pt-1" style={{ color: "var(--text-muted)" }}>
             Déjà un compte ?{" "}
-            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-700">
+            <Link
+              href="/login"
+              className="font-medium underline-offset-2 hover:underline"
+              style={{ color: "var(--color-kitrack-blue)" }}
+            >
               Se connecter
             </Link>
           </p>
-        </form>
+        </div>
       </div>
+    </div>
+  );
+}
+
+function InputField({
+  id, name, label, value, onChange, placeholder, type = "text", autoComplete, minLength,
+}: {
+  id: string; name: string; label: string; value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; type?: string; autoComplete?: string; minLength?: number;
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium mb-1.5" style={{ color: "var(--text-primary)" }}>
+        {label}
+      </label>
+      <input
+        id={id}
+        name={name}
+        type={type}
+        required
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        minLength={minLength}
+        className="w-full rounded-[var(--radius-card)] border px-3 py-2 text-sm outline-none transition-all"
+        style={{ background: "var(--surface-1)", borderColor: "var(--border-default)", color: "var(--text-primary)" }}
+        onFocus={(e) => (e.currentTarget.style.borderColor = "var(--color-kitrack-blue)")}
+        onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-default)")}
+      />
     </div>
   );
 }
