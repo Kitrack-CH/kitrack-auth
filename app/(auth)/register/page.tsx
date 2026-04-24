@@ -5,23 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    companyName: "",
-    fullName: "",
-    email: "",
-    password: "",
-  });
+  const [form, setForm] = useState({ fullName: "", email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -35,45 +21,14 @@ export default function RegisterPage() {
     setError(null);
 
     const supabase = createClient();
-
-    // 1. Create the user account
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
-      options: {
-        data: { full_name: form.fullName },
-      },
+      options: { data: { full_name: form.fullName } },
     });
 
-    if (signUpError || !data.user) {
-      setError(signUpError?.message ?? "Erreur lors de la création du compte");
-      setLoading(false);
-      return;
-    }
-
-    const userId = data.user.id;
-
-    // 2. Create the org
-    const orgSlug = slugify(form.companyName) || `org-${userId.slice(0, 8)}`;
-    const { data: org, error: orgError } = await supabase
-      .from("orgs")
-      .insert({ name: form.companyName, slug: orgSlug, created_by: userId })
-      .select("id")
-      .single();
-
-    if (orgError || !org) {
-      setError("Compte créé mais erreur lors de la création de l'organisation. Contactez le support.");
-      setLoading(false);
-      return;
-    }
-
-    // 3. Add user as owner
-    const { error: memberError } = await supabase
-      .from("org_members")
-      .insert({ org_id: org.id, user_id: userId, role: "owner", status: "active" });
-
-    if (memberError) {
-      setError("Organisation créée mais erreur lors de l'association. Contactez le support.");
+    if (error) {
+      setError(error.message);
       setLoading(false);
       return;
     }
@@ -87,7 +42,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-gray-900">KITRACK</h1>
-          <p className="mt-1 text-sm text-gray-500">Créez votre espace de travail</p>
+          <p className="mt-1 text-sm text-gray-500">Créez votre compte</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
@@ -96,22 +51,6 @@ export default function RegisterPage() {
               {error}
             </div>
           )}
-
-          <div>
-            <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
-              Nom de la société
-            </label>
-            <input
-              id="companyName"
-              name="companyName"
-              type="text"
-              required
-              value={form.companyName}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Acme Industries"
-            />
-          </div>
 
           <div>
             <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -131,7 +70,7 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email professionnel
+              Email
             </label>
             <input
               id="email"
@@ -142,7 +81,7 @@ export default function RegisterPage() {
               value={form.email}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="jean@acme.com"
+              placeholder="jean@exemple.com"
             />
           </div>
 
@@ -170,7 +109,7 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {loading ? "Création en cours..." : "Créer mon espace"}
+            {loading ? "Création..." : "Créer mon compte"}
           </button>
 
           <p className="text-center text-sm text-gray-500">
